@@ -9,4 +9,28 @@ public class MazeGenerator implements MazeGeneratorInterface{
 		mazeWidth = width;
 		mazeDifficulty = difficulty;
 	}
+
+	public int getHeight() {
+		return mazeHeight;
+	}
+
+	public int getWidth() {
+		return mazeWidth;
+	}
+
+	public int getDifficulty() {
+		return mazeDifficulty;
+	}
+
+	public void setHeight(int height) {
+		mazeHeight = height;
+	}
+
+	public void setWidth(int width) {
+		mazeWidth = width;
+	}
+
+	public void setDifficulty(int difficulty) {
+		mazeDifficulty = difficulty;
+	}
 }
