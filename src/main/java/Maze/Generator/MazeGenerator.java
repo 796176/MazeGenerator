@@ -352,13 +352,16 @@ public class MazeGenerator implements MazeGeneratorInterface{
 				exitCrotch.direction == Crotch.DOWNWARD && exitCrotchIndex == 2 ||
 				exitCrotch.direction == Crotch.RIGHT_TO_LEFT && exitCrotchIndex == 3) {
 				generateAndAttachCentralBranch(exitCrotch, offset);
+				break;
 			} else if  (exitCrotch.direction == Crotch.LEFT_TO_RIGHT && exitCrotchIndex == 0 ||
 						exitCrotch.direction == Crotch.DOWNWARD && exitCrotchIndex == 1 ||
 						exitCrotch.direction == Crotch.RIGHT_TO_LEFT && exitCrotchIndex == 2 ||
 						exitCrotch.direction == Crotch.UPWARD && exitCrotchIndex == 3) {
 				generateAndAttachLeftBranch(exitCrotch, offset);
+				break;
 			} else {
 				generateAndAttachRightBranch(exitCrotch, offset);
+				break;
 			}
 		}
 	}
