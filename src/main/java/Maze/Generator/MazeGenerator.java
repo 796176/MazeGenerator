@@ -138,59 +138,47 @@ public class MazeGenerator implements MazeGeneratorInterface{
 		switch (c.direction) {
 			case Crotch.LEFT_TO_RIGHT:
 				while (c.endPositionY - lengths[0] > 2 &&
-					isWall(root, c.endPositionX, c.endPositionY - lengths[0] - 2) == null &&
-					isWall(root, c.endPositionX - 1, c.endPositionY - lengths[0] - 2) == null &&
-					isWall(root, c.endPositionX + 1, c.endPositionY - lengths[0] - 2) == null) lengths[0]++;
+					findCrotch(root, c.endPositionX - 1, c.endPositionY - lengths[0] - 2,
+						c.endPositionX + 1, c.endPositionY - lengths[0] - 2) == null) lengths[0]++;
 				while (c.endPositionX + lengths[1] < mazeWidth - 3 &&
-					isWall(root, c.endPositionX + lengths[1] + 2, c.endPositionY) == null &&
-					isWall(root, c.endPositionX + lengths[1] + 2, c.endPositionY - 1) == null &&
-					isWall(root, c.endPositionX + lengths[1] + 2, c.endPositionY + 1) == null) lengths[1]++;
+					findCrotch(root, c.endPositionX + lengths[1] + 2, c.endPositionY - 1,
+						c.endPositionX + lengths[1] + 2, c.endPositionY + 1) == null) lengths[1]++;
 				while (c.endPositionY + lengths[2] < mazeHeight - 3 &&
-					isWall(root, c.endPositionX, c.endPositionY + lengths[2] + 2) == null &&
-					isWall(root, c.endPositionX - 1, c.endPositionY + lengths[2] + 2) == null &&
-					isWall(root, c.endPositionX + 1, c.endPositionY + lengths[2] + 2) == null) lengths[2]++;
+					findCrotch(root, c.endPositionX - 1, c.endPositionY + lengths[2] + 2,
+						c.endPositionX + 1, c.endPositionY + lengths[2] + 2) == null) lengths[2]++;
 				break;
 			case Crotch.RIGHT_TO_LEFT:
 				while (c.endPositionY + lengths[0] < mazeHeight - 3 &&
-					isWall(root, c.endPositionX, c.endPositionY + lengths[0] + 2) == null &&
-					isWall(root, c.endPositionX - 1, c.endPositionY + lengths[0] + 2) == null &&
-					isWall(root, c.endPositionX + 1, c.endPositionY + lengths[0] + 2) == null) lengths[0]++;
+					findCrotch(root, c.endPositionX - 1, c.endPositionY + lengths[0] + 2,
+						c.endPositionX + 1, c.endPositionY + lengths[0] + 2) == null) lengths[0]++;
 				while (c.endPositionX - lengths[1] > 2 &&
-					isWall(root, c.endPositionX - lengths[1] - 2, c.endPositionY) == null &&
-					isWall(root, c.endPositionX - lengths[1] - 2, c.endPositionY - 1) == null &&
-					isWall(root, c.endPositionX - lengths[1] - 2, c.endPositionY + 1) == null) lengths[1]++;
+					findCrotch(root, c.endPositionX - lengths[1] - 2, c.endPositionY - 1,
+						c.endPositionX - lengths[1] - 2, c.endPositionY + 1) == null) lengths[1]++;
 				while (c.endPositionY - lengths[2] > 2 &&
-					isWall(root, c.endPositionX, c.endPositionY - lengths[2] - 2) == null &&
-					isWall(root, c.endPositionX - 1, c.endPositionY - lengths[2] - 2) == null &&
-					isWall(root, c.endPositionX + 1, c.endPositionY - lengths[2] - 2) == null) lengths[2]++;
+					findCrotch(root, c.endPositionX - 1, c.endPositionY - lengths[2] - 2,
+						c.endPositionX + 1, c.endPositionY - lengths[2] - 2) == null) lengths[2]++;
 				break;
 			case Crotch.DOWNWARD:
 				while (c.endPositionX + lengths[0] < mazeWidth - 3 &&
-					isWall(root, c.endPositionX + lengths[0] + 2, c.endPositionY) == null &&
-					isWall(root, c.endPositionX + lengths[0] + 2, c.endPositionY - 1) == null &&
-					isWall(root, c.endPositionX + lengths[1] + 2, c.endPositionY + 1) == null) lengths[0]++;
+					findCrotch(root, c.endPositionX + lengths[0] + 2, c.endPositionY - 1,
+						c.endPositionX + lengths[0] + 2, c.endPositionY + 1) == null) lengths[0]++;
 				while (c.endPositionY + lengths[1] < mazeHeight - 3 &&
-					isWall(root, c.endPositionX, c.endPositionY + lengths[1] + 2) == null &&
-					isWall(root, c.endPositionX - 1, c.endPositionY + lengths[1] + 2) == null &&
-					isWall(root, c.endPositionX + 1, c.endPositionY + lengths[1] + 2) == null) lengths[1]++;
+					findCrotch(root, c.endPositionX - 1, c.endPositionY + lengths[1] + 2,
+						c.endPositionX + 1, c.endPositionY + lengths[1] + 2) == null) lengths[1]++;
 				while (c.endPositionX - lengths[2] > 2 &&
-					isWall(root, c.endPositionX - lengths[2] - 2, c.endPositionY) == null &&
-					isWall(root, c.endPositionX - lengths[2] - 2, c.endPositionY - 1) == null &&
-					isWall(root, c.endPositionX - lengths[2] - 2, c.endPositionY + 1) == null) lengths[2]++;
+					findCrotch(root, c.endPositionX - lengths[2] - 2, c.endPositionY - 1,
+						c.endPositionX - lengths[2] - 2, c.endPositionY - 1) == null) lengths[2]++;
 				break;
 			case Crotch.UPWARD:
 				while (c.endPositionX - lengths[0] > 2 &&
-					isWall(root, c.endPositionX - lengths[0] - 2, c.endPositionY) == null &&
-					isWall(root, c.endPositionX - lengths[0] - 2, c.endPositionY - 1) == null &&
-					isWall(root, c.endPositionX - lengths[0] - 1, c.endPositionY + 1) == null) lengths[0]++;
+					findCrotch(root, c.endPositionX - lengths[0] - 2, c.endPositionY - 1,
+						c.endPositionX - lengths[0] - 2, c.endPositionY + 1) == null) lengths[0]++;
 				while (c.endPositionY - lengths[1] > 2 &&
-					isWall(root, c.endPositionX, c.endPositionY - lengths[1] - 2) == null &&
-					isWall(root, c.endPositionX - 1, c.endPositionY - lengths[1] - 2) == null &&
-					isWall(root, c.endPositionX + 1, c.endPositionY - lengths[1] - 2) == null) lengths[1]++;
+					findCrotch(root, c.endPositionX - 1, c.endPositionY - lengths[1] - 2,
+						c.endPositionX + 1, c.endPositionY - lengths[1] - 2) == null) lengths[1]++;
 				while (c.endPositionX + lengths[2] < mazeWidth - 3 &&
-					isWall(root, c.endPositionX + lengths[2] + 2, c.endPositionY) == null &&
-					isWall(root, c.endPositionX + lengths[2] + 2, c.endPositionY - 1) == null &&
-					isWall(root, c.endPositionX + lengths[2] + 2, c.endPositionY + 1) == null) lengths[2]++;
+					findCrotch(root, c.endPositionX + lengths[2] + 2, c.endPositionY - 1,
+						c.endPositionX + lengths[2] + 2, c.endPositionY + 1) == null) lengths[2]++;
 				break;
 		}
 		return lengths;
