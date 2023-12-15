@@ -282,7 +282,7 @@ public class MazeGenerator implements MazeGeneratorInterface{
 		for (int index = 0; index < adjustedLength.length; index++){
 			if (adjustedLength[index] > maxBranchLength) adjustedLength[index] = maxBranchLength;
 		}
-		Random random = new Random();
+		Random random = new Random(MazeRandom.getSeed());
 		if (
 			adjustedLength[leftBranchLengthIndex] >= minBranchLenght &&
 			adjustedLength[centralBranchLengthIndex] >= minBranchLenght &&
@@ -483,7 +483,7 @@ public class MazeGenerator implements MazeGeneratorInterface{
 			}
 			if (isPossibleExistsEmpty) continue;
 
-			Random random = new Random();
+			Random random = new Random(MazeRandom.getSeed());
 			int exitCrotchIndex;
 			Crotch exitCrotch;
 			do {
