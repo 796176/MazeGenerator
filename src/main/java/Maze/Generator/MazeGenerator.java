@@ -9,10 +9,20 @@ public class MazeGenerator implements MazeGeneratorInterface{
 	private int mazeWidth;
 	private int mazeHeight;
 	private int mazeDifficulty;
+	private int mazeWidthIndexMin = 0;
+	private int mazeWidthIndexMax;
+	private int mazeHeightIndexMin = 0;
+	private int mazeHeightIndexMax;
+	private int minBranchLenght = 2;
+	private int maxBranchLength = 6;
+	private int mazeOffset = 2;
+	private int initialBranchLength = 10;
 	public MazeGenerator(int width, int height, int difficulty){
 		mazeHeight = height;
 		mazeWidth = width;
 		mazeDifficulty = difficulty;
+		mazeWidthIndexMax = mazeWidth - 1;
+		mazeHeightIndexMax = mazeHeight - 1;
 	}
 
 	public int getHeight() {
@@ -41,7 +51,7 @@ public class MazeGenerator implements MazeGeneratorInterface{
 
 	public Maze generate(){
 		int []rootStartPosition = {mazeWidth/2, mazeHeight/2};
-		Crotch root = new Crotch(rootStartPosition, 10, Crotch.LEFT_TO_RIGHT);
+		Crotch root = new Crotch(rootStartPosition, initialBranchLength, Crotch.LEFT_TO_RIGHT);
 		LinkedBlockingQueue queue = new LinkedBlockingQueue();
 		queue.add(root);
 		int queueIterator = 1;
@@ -135,104 +145,236 @@ public class MazeGenerator implements MazeGeneratorInterface{
 
 	private int[] getMaxBranchLengths(Crotch root, Crotch c) {
 		int[] lengths = new int[3];
+		int leftBranchLengthIndex = 0;
+		int centralBranchLengthIndex = 1;
+		int rightBranchLengthIndex = 2;
+		int sideCollisionOffset = 1;
+		int frontCollisionOffset = 2;
 		switch (c.direction) {
 			case Crotch.LEFT_TO_RIGHT:
-				while (c.endPositionY - lengths[0] > 2 &&
-					findCrotch(root, c.endPositionX - 1, c.endPositionY - lengths[0] - 2,
-						c.endPositionX + 1, c.endPositionY - lengths[0] - 2) == null) lengths[0]++;
-				while (c.endPositionX + lengths[1] < mazeWidth - 3 &&
-					findCrotch(root, c.endPositionX + lengths[1] + 2, c.endPositionY - 1,
-						c.endPositionX + lengths[1] + 2, c.endPositionY + 1) == null) lengths[1]++;
-				while (c.endPositionY + lengths[2] < mazeHeight - 3 &&
-					findCrotch(root, c.endPositionX - 1, c.endPositionY + lengths[2] + 2,
-						c.endPositionX + 1, c.endPositionY + lengths[2] + 2) == null) lengths[2]++;
+				while (c.endPositionY - lengths[leftBranchLengthIndex] > mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - sideCollisionOffset,
+						c.endPositionY - lengths[leftBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionX + sideCollisionOffset,
+						c.endPositionY - lengths[leftBranchLengthIndex] - frontCollisionOffset
+					) == null
+				) lengths[leftBranchLengthIndex]++;
+				while (c.endPositionX + lengths[centralBranchLengthIndex] < mazeWidthIndexMax - mazeOffset &&
+					findCrotch(root,
+						c.endPositionX + lengths[centralBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset,
+						c.endPositionX + lengths[centralBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionY + sideCollisionOffset
+					) == null
+				) lengths[centralBranchLengthIndex]++;
+				while (c.endPositionY + lengths[rightBranchLengthIndex] < mazeHeightIndexMax - mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - sideCollisionOffset,
+						c.endPositionY + lengths[rightBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionX + sideCollisionOffset,
+						c.endPositionY + lengths[rightBranchLengthIndex] + frontCollisionOffset
+					) == null
+				) lengths[rightBranchLengthIndex]++;
 				break;
 			case Crotch.RIGHT_TO_LEFT:
-				while (c.endPositionY + lengths[0] < mazeHeight - 3 &&
-					findCrotch(root, c.endPositionX - 1, c.endPositionY + lengths[0] + 2,
-						c.endPositionX + 1, c.endPositionY + lengths[0] + 2) == null) lengths[0]++;
-				while (c.endPositionX - lengths[1] > 2 &&
-					findCrotch(root, c.endPositionX - lengths[1] - 2, c.endPositionY - 1,
-						c.endPositionX - lengths[1] - 2, c.endPositionY + 1) == null) lengths[1]++;
-				while (c.endPositionY - lengths[2] > 2 &&
-					findCrotch(root, c.endPositionX - 1, c.endPositionY - lengths[2] - 2,
-						c.endPositionX + 1, c.endPositionY - lengths[2] - 2) == null) lengths[2]++;
+				while (c.endPositionY + lengths[leftBranchLengthIndex] < mazeHeightIndexMax - mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - sideCollisionOffset,
+						c.endPositionY + lengths[leftBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionX + sideCollisionOffset,
+						c.endPositionY + lengths[leftBranchLengthIndex] + frontCollisionOffset
+					) == null
+				) lengths[leftBranchLengthIndex]++;
+				while (c.endPositionX - lengths[centralBranchLengthIndex] > mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - lengths[centralBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset,
+						c.endPositionX - lengths[centralBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionY + sideCollisionOffset
+					) == null
+				) lengths[centralBranchLengthIndex]++;
+				while (c.endPositionY - lengths[rightBranchLengthIndex] > mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - sideCollisionOffset,
+						c.endPositionY - lengths[rightBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionX + sideCollisionOffset,
+						c.endPositionY - lengths[rightBranchLengthIndex] - frontCollisionOffset
+					) == null
+				) lengths[rightBranchLengthIndex]++;
 				break;
 			case Crotch.DOWNWARD:
-				while (c.endPositionX + lengths[0] < mazeWidth - 3 &&
-					findCrotch(root, c.endPositionX + lengths[0] + 2, c.endPositionY - 1,
-						c.endPositionX + lengths[0] + 2, c.endPositionY + 1) == null) lengths[0]++;
-				while (c.endPositionY + lengths[1] < mazeHeight - 3 &&
-					findCrotch(root, c.endPositionX - 1, c.endPositionY + lengths[1] + 2,
-						c.endPositionX + 1, c.endPositionY + lengths[1] + 2) == null) lengths[1]++;
-				while (c.endPositionX - lengths[2] > 2 &&
-					findCrotch(root, c.endPositionX - lengths[2] - 2, c.endPositionY - 1,
-						c.endPositionX - lengths[2] - 2, c.endPositionY - 1) == null) lengths[2]++;
+				while (c.endPositionX + lengths[leftBranchLengthIndex] < mazeWidthIndexMax - mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX + lengths[leftBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset,
+						c.endPositionX + lengths[leftBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionY + sideCollisionOffset
+					) == null
+				) lengths[leftBranchLengthIndex]++;
+				while (c.endPositionY + lengths[centralBranchLengthIndex] < mazeHeightIndexMax - mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - sideCollisionOffset,
+						c.endPositionY + lengths[centralBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionX + sideCollisionOffset,
+						c.endPositionY + lengths[centralBranchLengthIndex] + frontCollisionOffset
+					) == null
+				) lengths[centralBranchLengthIndex]++;
+				while (c.endPositionX - lengths[rightBranchLengthIndex] > mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - lengths[rightBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset,
+						c.endPositionX - lengths[rightBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset
+					) == null
+				) lengths[rightBranchLengthIndex]++;
 				break;
 			case Crotch.UPWARD:
-				while (c.endPositionX - lengths[0] > 2 &&
-					findCrotch(root, c.endPositionX - lengths[0] - 2, c.endPositionY - 1,
-						c.endPositionX - lengths[0] - 2, c.endPositionY + 1) == null) lengths[0]++;
-				while (c.endPositionY - lengths[1] > 2 &&
-					findCrotch(root, c.endPositionX - 1, c.endPositionY - lengths[1] - 2,
-						c.endPositionX + 1, c.endPositionY - lengths[1] - 2) == null) lengths[1]++;
-				while (c.endPositionX + lengths[2] < mazeWidth - 3 &&
-					findCrotch(root, c.endPositionX + lengths[2] + 2, c.endPositionY - 1,
-						c.endPositionX + lengths[2] + 2, c.endPositionY + 1) == null) lengths[2]++;
+				while (c.endPositionX - lengths[leftBranchLengthIndex] > mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - lengths[leftBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset,
+						c.endPositionX - lengths[leftBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionY + sideCollisionOffset
+					) == null
+				) lengths[leftBranchLengthIndex]++;
+				while (c.endPositionY - lengths[centralBranchLengthIndex] > mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX - sideCollisionOffset,
+						c.endPositionY - lengths[centralBranchLengthIndex] - frontCollisionOffset,
+						c.endPositionX + sideCollisionOffset,
+						c.endPositionY - lengths[centralBranchLengthIndex] - frontCollisionOffset
+					) == null
+				) lengths[centralBranchLengthIndex]++;
+				while (c.endPositionX + lengths[rightBranchLengthIndex] < mazeWidthIndexMax - mazeOffset &&
+					findCrotch(
+						root,
+						c.endPositionX + lengths[rightBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionY - sideCollisionOffset,
+						c.endPositionX + lengths[rightBranchLengthIndex] + frontCollisionOffset,
+						c.endPositionY + sideCollisionOffset
+					) == null
+				) lengths[rightBranchLengthIndex]++;
 				break;
 		}
 		return lengths;
 	}
 
 	private void generateAndAttachBranches(Crotch c, int[] lengths) {
-		if (lengths[0] < 2 || lengths[2] < 2) return;
+		int leftBranchLengthIndex = 0;
+		int centralBranchLengthIndex = 1;
+		int rightBranchLengthIndex = 2;
+
+		if (lengths[leftBranchLengthIndex] < minBranchLenght || lengths[rightBranchLengthIndex] < minBranchLenght)
+			return;
 
 		int[] adjustedLength = lengths.clone();
 		for (int index = 0; index < adjustedLength.length; index++){
-			if (adjustedLength[index] > 6) adjustedLength[index] = 6;
+			if (adjustedLength[index] > maxBranchLength) adjustedLength[index] = maxBranchLength;
 		}
 		Random random = new Random();
-		if (adjustedLength[0] >= 2 && adjustedLength[1] >= 2 && adjustedLength[2] >= 2){
+		if (
+			adjustedLength[leftBranchLengthIndex] >= minBranchLenght &&
+			adjustedLength[centralBranchLengthIndex] >= minBranchLenght &&
+			adjustedLength[rightBranchLengthIndex] >= minBranchLenght
+		){
 			switch (random.nextInt(4)){
 				case 0:
-					generateAndAttachLeftBranch(c, random.nextInt(adjustedLength[0] - 1) + 2);
-					generateAndAttachCentralBranch(c, random.nextInt(adjustedLength[1] - 1) + 2);
+					generateAndAttachLeftBranch(
+						c,
+						random.nextInt(adjustedLength[leftBranchLengthIndex] - 1) + minBranchLenght
+					);
+					generateAndAttachCentralBranch(
+						c,
+						random.nextInt(adjustedLength[centralBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 				case 1:
-					generateAndAttachCentralBranch(c, random.nextInt(adjustedLength[1] - 1) + 2);
-					generateAndAttachRightBranch(c, random.nextInt(adjustedLength[2] - 1) + 2);
+					generateAndAttachCentralBranch(
+						c,
+						random.nextInt(adjustedLength[centralBranchLengthIndex] - 1) + minBranchLenght
+					);
+					generateAndAttachRightBranch(
+						c,
+						random.nextInt(adjustedLength[rightBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 				case 2:
-					generateAndAttachLeftBranch(c, random.nextInt(adjustedLength[0] - 1) + 2);
+					generateAndAttachLeftBranch(
+						c,
+						random.nextInt(adjustedLength[leftBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 				case 3:
-					generateAndAttachRightBranch(c, random.nextInt(adjustedLength[2] - 1) + 2);
+					generateAndAttachRightBranch(
+						c,
+						random.nextInt(adjustedLength[rightBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 			}
-		} else if(adjustedLength[0] >= 2 && adjustedLength[1] >= 2){
+		} else if (
+			adjustedLength[leftBranchLengthIndex] >= minBranchLenght &&
+			adjustedLength[centralBranchLengthIndex] >= minBranchLenght
+		){
 			switch (random.nextInt(2)){
 				case 0:
-					generateAndAttachLeftBranch(c, random.nextInt(adjustedLength[0] - 1) + 2);
-					generateAndAttachCentralBranch(c, random.nextInt(adjustedLength[1] - 1) + 2);
+					generateAndAttachLeftBranch(
+						c,
+						random.nextInt(adjustedLength[leftBranchLengthIndex] - 1) + minBranchLenght
+					);
+					generateAndAttachCentralBranch(
+						c, random.nextInt(adjustedLength[centralBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 				case 1:
-					generateAndAttachLeftBranch(c, random.nextInt(adjustedLength[0] - 1) + 2);
+					generateAndAttachLeftBranch(
+						c,
+						random.nextInt(adjustedLength[leftBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 			}
-		} else if (adjustedLength[1] >= 2 && adjustedLength[2] >= 2) {
+		} else if (
+			adjustedLength[centralBranchLengthIndex] >= minBranchLenght &&
+			adjustedLength[rightBranchLengthIndex] >= minBranchLenght
+		) {
 			switch (random.nextInt(2)){
 				case 0:
-					generateAndAttachCentralBranch(c, random.nextInt(adjustedLength[1] - 1) + 2);
-					generateAndAttachRightBranch(c, random.nextInt(adjustedLength[2] - 1) + 2);
+					generateAndAttachCentralBranch(
+						c,
+						random.nextInt(adjustedLength[centralBranchLengthIndex] - 1) + minBranchLenght
+					);
+					generateAndAttachRightBranch(
+						c,
+						random.nextInt(adjustedLength[rightBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 				case 1:
-					generateAndAttachRightBranch(c, random.nextInt(adjustedLength[2] - 1) + 2);
+					generateAndAttachRightBranch(
+						c,
+						random.nextInt(adjustedLength[rightBranchLengthIndex] - 1) + minBranchLenght
+					);
 					break;
 			}
-		} else if (adjustedLength[0] >= 2) {
-			generateAndAttachLeftBranch(c, random.nextInt(adjustedLength[0] - 1) + 2);
-		} else if (adjustedLength[2] >= 2) {
-			generateAndAttachRightBranch(c, random.nextInt(adjustedLength[2] - 1) + 2);
+		} else if (adjustedLength[leftBranchLengthIndex] >= minBranchLenght) {
+			generateAndAttachLeftBranch(
+				c,
+				random.nextInt(adjustedLength[leftBranchLengthIndex] - 1) + minBranchLenght
+			);
+		} else if (adjustedLength[rightBranchLengthIndex] >= minBranchLenght) {
+			generateAndAttachRightBranch(
+				c,
+				random.nextInt(adjustedLength[rightBranchLengthIndex] - 1) + minBranchLenght
+			);
 		}
 	}
 
@@ -316,10 +458,24 @@ public class MazeGenerator implements MazeGeneratorInterface{
 	private void generateExit(Crotch root){
 		for (int offset = 2; offset < Math.min(mazeHeight, mazeWidth) / 2; offset++){
 			Crotch[] possibleExits = new Crotch[4];
-			possibleExits[0] = findCrotch(root, 0, offset, mazeWidth - 1, offset);
-			possibleExits[1] = findCrotch(root, mazeWidth - 1 - offset, 0, mazeWidth - 1 - offset, mazeHeight - 1);
-			possibleExits[2] = findCrotch(root, 0, mazeHeight - 1 - offset, mazeWidth - 1, mazeHeight - 1 - offset);
-			possibleExits[3] = findCrotch(root, offset, 0, offset, mazeHeight - 1);
+			possibleExits[0] = findCrotch(root, mazeWidthIndexMin, offset, mazeWidthIndexMax, offset);
+			possibleExits[1] =
+				findCrotch(
+					root,
+					mazeWidthIndexMax - offset,
+					mazeHeightIndexMin,
+					mazeWidthIndexMax - offset,
+					mazeHeightIndexMax
+				);
+			possibleExits[2] =
+				findCrotch(
+					root,
+					mazeWidthIndexMin,
+					mazeHeightIndexMax- offset,
+					mazeWidthIndexMax,
+					mazeHeightIndexMax - offset
+				);
+			possibleExits[3] = findCrotch(root, offset, mazeHeightIndexMin, offset, mazeHeightIndexMax);
 
 			boolean isPossibleExistsEmpty = true;
 			for (Crotch possibleExit : possibleExits) {
