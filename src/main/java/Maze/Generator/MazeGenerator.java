@@ -1,5 +1,6 @@
 package Maze.Generator;
 import Maze.*;
+import java.util.Arrays;
 import java.util.Random;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.lang.Math;
@@ -99,19 +100,26 @@ public class MazeGenerator implements MazeGeneratorInterface{
 	private Crotch findCrotch(Crotch crotch, int startX, int startY, int endX, int endY){
 		if (crotch == null) return null;
 
-		if (
-			(
-				Math.min(crotch.startPositionX, crotch.endPositionX) > Math.max(startX, endX) ||
-					Math.min(startX, endX) > Math.max(crotch.startPositionX, crotch.endPositionY)
-			) &&
-			(
-				Math.max(crotch.startPositionY, crotch.endPositionY) > Math.max(startY, endY) ||
-					Math.min(startY, endY) > Math.max(crotch.startPositionY, crotch.endPositionY)
-			)
-		) return crotch;
+		// if two rectangles overlap their projections onto the abscissa overlap as well
+		int []abscissaProjection1 = new int[]{crotch.startPositionX, crotch.endPositionX};
+		Arrays.sort(abscissaProjection1);
+		int []abscissaProjection2 = new int[]{startX, endX};
+		Arrays.sort(abscissaProjection2);
+		boolean abscissaOverlap = false;
+		if (abscissaProjection1[0] <= abscissaProjection2[0] && abscissaProjection1[1] >= abscissaProjection2[0]) abscissaOverlap = true;
+		else if (abscissaProjection2[0] <= abscissaProjection1[0] && abscissaProjection2[1] >= abscissaProjection1[0]) abscissaOverlap = true;
 
+		// if two rectangles overlap their projections onto the ordinate overlap as well
+		int []ordinateProjection1 = new int[]{crotch.startPositionY, crotch.endPositionY};
+		Arrays.sort(ordinateProjection1);
+		int []ordinateProjection2 = new int[]{startY, endY};
+		Arrays.sort(ordinateProjection2);
+		boolean ordinateOverlap = false;
+		if (ordinateProjection1[0] <= ordinateProjection2[0] && ordinateProjection1[1] >= ordinateProjection2[0]) ordinateOverlap = true;
+		else if (ordinateProjection2[0] <= ordinateProjection1[0] && ordinateProjection2[1] >= ordinateProjection1[0]) ordinateOverlap = true;
 
-		if (crotch.startPosition[0] == crotch.endPosition[0]) return crotch;
+		if (abscissaOverlap && ordinateOverlap) return crotch;
+
 
 		Crotch lCrotchResult = findCrotch(crotch.lCrotch, startX, startY, endX, endY);
 		if (lCrotchResult != null) return lCrotchResult;
